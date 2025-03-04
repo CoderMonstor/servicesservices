@@ -87,6 +87,7 @@ public class UserController {
             json =  new Result<>(null, "-2", "验证码不符或已经超时了");
             return json;
         }
+
         User user = new User(email, password);
         if (code.equals(sessionCode)) {
             if(userService.isExistTheEmail(email) == 0){

@@ -20,9 +20,17 @@ public class FileUtils {
      * @param file 文件
      * */
     public boolean upload(MultipartFile file, String path, String filename) {
+        System.out.println("--------------------------------------file upload start----------------------------");
+        System.out.println(path);
+        System.out.println(filename);
+        if (file.isEmpty()) {
+            logger.error("文件为空");
+            return false;
+        }
         String realPath = path + filename;
+        System.out.println(realPath);
         File dest = new File(realPath);
-
+        System.out.println("--------------------------------------file upload have been ready----------------------------");
         // 判断文件父目录是否存在
         if (!dest.getParentFile().exists()) {
             if (!dest.getParentFile().mkdirs()) {
@@ -46,6 +54,8 @@ public class FileUtils {
         try {
             // 保存文件
             file.transferTo(dest);
+            System.out.println("--------------------------------------file upload success,and the path is ----------------------------");
+            System.out.println(dest);
             return true;
         } catch (IllegalStateException | IOException e) {
             logger.error("文件上传失败: {}", dest.getAbsolutePath(), e);

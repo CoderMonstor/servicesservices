@@ -1,6 +1,7 @@
 server:
   port: 8080
 #  port: 8888
+
 spring:
   application:
     name: services
@@ -59,6 +60,8 @@ spring:
       mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
       mail.smtp.socketFactory.fallback: false
 
+
+
 page helper:
   helperDialect: mysql
   reasonable: true
@@ -69,4 +72,13 @@ page helper:
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-#  mapper-locations: classpath:mapper/*.xml
+
+image_resource:
+  windows: D:/images/
+  windows_load: file:D://images/
+  linux: /tmp/images/
+  linux_load: file:/tmp/images/
+
+#image_resource:
+#  windows: src/main/resources/images/
+#  linux: src/main/resources/images/

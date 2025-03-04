@@ -30,7 +30,7 @@ public interface UserMapper {
     User findUserByName(@Param("askId") Integer askId, String username);
 
     //添加用户
-    @Insert({"insert into user(email,password) values(#{email},#{password})"})
+    @Insert({"insert into user(id,email,password) values(#{id},#{email},#{password})"})
     @Options(useGeneratedKeys=true,keyColumn="userId",keyProperty = "userId")
     Integer insertUser(User user);
 
