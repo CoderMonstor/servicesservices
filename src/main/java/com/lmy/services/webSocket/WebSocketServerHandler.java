@@ -59,6 +59,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
         // 客服端发送过来的消息
         String request = ((TextWebSocketFrame)frame).text();
         LOGGER.info("服务端收到新信息：" + request);
+
         JSONObject param = null;
         try {
             param = JSONObject.parseObject(request);

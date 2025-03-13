@@ -78,7 +78,3 @@ image_resource:
   windows_load: file:D://images/
   linux: /tmp/images/
   linux_load: file:/tmp/images/
-
-#image_resource:
-#  windows: src/main/resources/images/
-#  linux: src/main/resources/images/

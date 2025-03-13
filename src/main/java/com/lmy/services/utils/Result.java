@@ -6,13 +6,6 @@ public class Result<T> {
     private String code;
     private String msg;
     private Integer totalPage;
-    public static<T> Result<T> success() {
-        return new Result<>("1", "success");
-    }
-
-    public static <T> Result<T> success(T data) {
-        return new Result<>(data, "1", "success");
-    }
 
     public static <T> Result<T> error(String msg) {
         return new Result<>("0", msg);
