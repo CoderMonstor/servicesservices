@@ -1,6 +1,9 @@
 package com.lmy.services.entity;
 
-public class MsgUserList {
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+@EntityScan
+public class UserMsgList {
     private String imageUrl;
     private String name;
     private String msg;

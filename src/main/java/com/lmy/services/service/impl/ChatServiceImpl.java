@@ -50,37 +50,50 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void singleSend(JSONObject param, ChannelHandlerContext ctx) {
         try {
-//            int fromUserIdInt = Integer.parseInt(fromUserId);
-//            int toUserIdInt = Integer.parseInt(toUserId);
+            String fromUserId = (String) param.get("fromUserId");
+            Integer sender = Integer.parseInt(fromUserId);
+            Integer receiver = Integer.parseInt((String) param.get("toUserId"));
 
-            // 继续处理...
-            String fromUserId = (String)param.get("fromUserId");
-            Integer sender=Integer.parseInt(fromUserId);
-            Integer receiver=Integer.parseInt((String)param.get("toUserId"));
+            // 保存实际的发送者ID
+            Integer actualSender = sender;
 
-            String messageContent = (String)param.get("content");
-//            Integer roomId = chatroomMapper.findChatroomIdByUsers(sender, receiver);
-            Integer roomId = userMessageMapper.findChatroomIdByUsers(sender, receiver);
+            // 确保 sender 小于 receiver，违反数据库约束时会报错
+            if (sender > receiver) {
+                // 交换 sender 和 receiver
+                Integer temp = sender;
+                sender = receiver;
+                receiver = temp;
+            }
+
+            String messageContent = (String) param.get("content");
+
+            // 查询是否已有聊天室
+            Integer roomId = userMessageMapper.getChatRoomId(sender, receiver);
+
             if (roomId == null) {
+                // 如果没有聊天室，创建一个新聊天室
                 Chatroom chatroom = new Chatroom();
                 chatroom.setSender(sender);
                 chatroom.setReceiver(receiver);
-//                chatroomMapper.insertChatroom(chatroom);
-                userMessageMapper.insertChatroom(chatroom);
+                userMessageMapper.insertChatRoom(chatroom);
                 roomId = chatroom.getRoomId();
             }
+
             // 存储消息到数据库
             Message message = new Message();
             message.setRoomId(roomId);
-            message.setSender(sender);
+            message.setSender(actualSender);  // 确保消息的发送者是实际的发送者
             message.setMessage(messageContent);
-//            messageMapper.insertMessage(message);
             userMessageMapper.insertMessage(message);
 
         } catch (NumberFormatException e) {
             // 处理转换失败的情况
             System.out.println("转换失败");
+        } catch (Exception e) {
+            // 其他异常处理
+            e.printStackTrace();
         }
+
 
         // 发送给接收方
         String fromUserId = (String)param.get("fromUserId");

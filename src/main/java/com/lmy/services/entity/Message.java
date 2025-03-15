@@ -1,9 +1,11 @@
 package com.lmy.services.entity;
 
 import lombok.Data;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.util.Date;
 @Data
+@EntityScan
 public class Message {
     private Integer messageId;
     private Integer roomId;

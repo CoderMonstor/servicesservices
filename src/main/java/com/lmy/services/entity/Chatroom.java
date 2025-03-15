@@ -1,5 +1,8 @@
 package com.lmy.services.entity;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+@EntityScan
 public class Chatroom {
     private Integer roomId;
     private Integer sender;
