@@ -11,40 +11,10 @@ import java.util.List;
 
 @Repository
 public interface UserMessageMapper {
-    @Select("SELECT other_user.avatarUrl AS imageUrl, " +
-            "       other_user.username AS name, " +
-            "       m.message AS msg, " +
-            "       m.messageTime AS time " +
-            "FROM chatroom cr " +
-            "JOIN user other_user ON " +
-            "    CASE " +
-            "        WHEN cr.sender = #{userId} THEN cr.receiver " +
-            "        ELSE cr.sender " +
-            "    END = other_user.userId " +
-            "JOIN ( " +
-            "    SELECT " +
-            "        roomId, " +
-            "        MAX(messageTime) AS latest_time " +
-            "    FROM message " +
-            "    GROUP BY roomId " +
-            ") latest ON cr.roomId = latest.roomId " +
-            "JOIN message m ON " +
-            "    m.roomId = latest.roomId " +
-            "    AND m.messageTime = latest.latest_time " +
-            "WHERE " +
-            "    #{userId} IN (cr.sender, cr.receiver) " +
-            "ORDER BY time DESC")
-        List<UserMsgList> getMsgUserList(@Param("userId") int userId);
 
-
-        @Select("SELECT roomId FROM chatroom WHERE sender = #{sender} AND receiver = #{receiver}")
-        Integer findChatroomIdByUsers(@Param("sender") Integer sender, @Param("receiver") Integer receiver);
-
-
-        @Insert("INSERT INTO message(roomId, sender, message) VALUES(#{roomId}, #{sender}, #{message})")
-        @Options(useGeneratedKeys = true, keyProperty = "messageId")
-        void insertMessage(Message message);
-
+    @Insert("INSERT INTO message(roomId, sender, message) VALUES(#{roomId}, #{sender}, #{message})")
+    @Options(useGeneratedKeys = true, keyProperty = "messageId")
+    void insertMessage(Message message);
 
 
     @Select("SELECT roomId FROM chatroom WHERE sender = #{sender} AND receiver = #{receiver}")

@@ -17,13 +17,29 @@ public class ProductServiceImpl implements ProductService {
     public ProductServiceImpl(ProductMapper productMapper) {
         this.productMapper = productMapper;
     }
+
     @Override
-    public List<ProductPage> getAllProduct(Integer userId) {
-        return productMapper.getAllProduct(userId);
+    public Integer createProduct(Product product) {
+        return productMapper.createProduct(product);
+    }
+
+    @Override
+    public List<Product> getAllProduct() {
+        return productMapper.getAllProduct();
+    }
+
+    @Override
+    public List<Product> getProductByProductId(Integer productId) {
+        return productMapper.getProductByProductId(productId);
     }
 
     @Override
     public List<Product> getProductByUserId(Integer userId) {
         return productMapper.getProductByUserId(userId);
     }
+
+    public List<Product> getProductsByCategory(Integer category) {
+        return productMapper.getProductsByCategory(category);
+    }
+
 }

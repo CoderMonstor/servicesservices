@@ -1,11 +1,11 @@
 package com.lmy.services.entity;
 
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-
-@EntityScan
 public class Product {
     private Integer productId;
     private Integer userId;
+    private String username;
+    private String date;
+    private String avatarUrl;
     private String title;
     private String description;
     private String images;
@@ -28,6 +28,30 @@ public class Product {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public String getTitle() {
@@ -93,5 +117,9 @@ public class Product {
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
+
+
+
+
 
 }

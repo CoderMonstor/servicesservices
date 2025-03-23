@@ -95,6 +95,11 @@
             <artifactId>jakarta.mail</artifactId>
             <version>1.6.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <version>3.4.2</version>
+        </dependency>
     </dependencies>
 
     <build>

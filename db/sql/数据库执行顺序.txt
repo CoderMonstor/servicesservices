@@ -1,0 +1,4 @@
+1.导入表数据:mshop.sql
+2.导入基础数据:data.sql
+3.导入城市数据:data_city.sql
+4.导入敏感词数据:data_sensitive_word.sql

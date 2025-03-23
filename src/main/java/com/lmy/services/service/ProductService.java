@@ -1,12 +1,18 @@
 package com.lmy.services.service;
 
 import com.lmy.services.entity.Product;
-import com.lmy.services.entity.ProductPage;
 
 import java.util.List;
 
 public interface ProductService {
-    List<ProductPage> getAllProduct(Integer userId);
+    Integer createProduct(Product product);
+
+    List<Product> getAllProduct();
+
+    List<Product> getProductByProductId(Integer productId);
 
     List<Product> getProductByUserId(Integer userId);
+
+    List<Product> getProductsByCategory(Integer category);
+
 }
