@@ -31,10 +31,13 @@ public class Goods {
     //商品描述
     private String goodsDesc;
     //价格
-    private BigDecimal goodsPrice;
+    private double goodsPrice;
+    //姓名
+    @TableField(exist = false)
+    private String username;
     //交易价格
     @TableField(exist = false)
-    private BigDecimal price;
+    private double price;
     //发布/求购地址
     private String address;
     //图片
@@ -53,4 +56,5 @@ public class Goods {
     @TableField(exist = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date sellTime;
+
 }

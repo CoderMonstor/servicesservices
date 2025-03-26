@@ -24,7 +24,8 @@ public class GoodsController {
     //发布
     @RequestMapping("/addResale")
     public Result<Integer> addResale(Goods goods){
-        //设置时间
+        System.out.println("------------------------------------------------------------------");
+        System.out.println(goods.getType());
         Result<Integer> json;
         try {
             Integer res= goodsService.addResale(goods);
@@ -36,7 +37,7 @@ public class GoodsController {
         return json;
     }
     //上架下架
-    @PostMapping("/upOrDown")
+    @RequestMapping("/upOrDown")
     public Result<Integer> upOrDown(Integer goodsId){
         Result<Integer> json;
         try {

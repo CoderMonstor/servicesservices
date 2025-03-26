@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface GoodsMapper {
 
-    @Insert("insert into goods (userId,categoryId,type,goodsName,goodsDesc,goodsPrice,image,status,sellStatus,creatTime,address) " +
-            "values (#{userId},#{categoryId},#{type},#{goodsName},#{goodsDesc},#{goodsPrice},#{image},#{status},#{sellStatus},#{createTime},#{adress})")
+    @Insert("insert into goods (userId,categoryId,type,goodsName,goodsDesc,goodsPrice,image,status,sellStatus,createTime,address) " +
+            "values (#{userId},#{categoryId},#{type},#{goodsName},#{goodsDesc},#{goodsPrice},#{image},#{status},#{sellStatus},#{createTime},#{address})")
     Integer addResale(Goods goods);
 
 
@@ -23,28 +23,26 @@ public interface GoodsMapper {
     @Delete("DELETE FROM goods WHERE goodsId = #{goodsId}")
     Integer deleteGoods(Integer goodsId);
 
-//    @Select("SELECT * FROM goods ORDER BY ")
-//    List<Goods> getResaleList(Integer userId);
+
 
     // 核心映射：一个 Goods 关联用户昵称、分类名、收藏状态等
-    @Select("SELECT *, #{askId} AS askId FROM goods WHERE type = '0' ORDER BY goodsId DESC")
+    @Select("SELECT *, #{askId} AS askId FROM goods WHERE type = '0' AND status = '0' ORDER BY goodsId DESC")
     @Results(id = "goodsMap", value = {
             @Result(id = true, property = "goodsId", column = "goodsId"),
             @Result(property = "userId", column = "userId"),
             @Result(property = "categoryId", column = "categoryId"),
             @Result(property = "username", column = "userId",
                     one = @One(select = "com.lmy.services.mapper.UserMapper.getUsernameById")),
-            @Result(property = "isCollected", column = "{askId=askId,goodsId=goodsId}",
-                    one = @One(select = "com.lmy.services.mapper.GoodsMapper.isCollected")),
     })
     List<Goods> getResaleList(Integer askId);
+
 
     @Select("SELECT * FROM goods WHERE goodsId = #{goodsId}")
     Goods getGoodsByGoodsId(Integer goodsId);
 
 
     @Select("SELECT *, #{userId} AS askId FROM goods WHERE type = '1' ORDER BY goodsId DESC")
-    @ResultMap("goodsMap") // 复用上面的映射
+    @ResultMap("goodsMap")
     List<Goods> getBuyList(Integer userId);
 
 
@@ -98,7 +96,7 @@ public interface GoodsMapper {
     List<Goods> getSellOrder(@Param("userId") Integer userId);
 
     // 判断某个用户是否收藏了某个商品
-    @Select("SELECT COUNT(*) FROM collect WHERE userId = #{askId} AND goodsId = #{goodsId}")
+    @Select("SELECT COUNT(*) FROM collectgoods WHERE userId = #{askId} AND goodsId = #{goodsId}")
     Integer isCollected(@Param("askId") Integer askId, @Param("goodsId") Integer goodsId);
 
     // 模糊搜索商品
