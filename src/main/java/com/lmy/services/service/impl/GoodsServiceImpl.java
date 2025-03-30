@@ -25,8 +25,8 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public Goods getGoodsByGoodsId(Integer goodsId) {
-        return goodsMapper.getGoodsByGoodsId(goodsId);
+    public Goods getGoodsByGoodsId(Integer userId, Integer goodsId) {
+        return goodsMapper.getGoodsByGoodsId(userId,goodsId);
     }
 
     @Override
@@ -97,5 +97,10 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public List<Goods> searchGoods(Integer askId, String key) {
         return goodsMapper.searchGoods(askId, key);
+    }
+
+    @Override
+    public List<Goods> getMyGoods(Integer userId) {
+        return goodsMapper.getMyGoods(userId);
     }
 }

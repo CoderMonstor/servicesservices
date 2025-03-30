@@ -22,8 +22,7 @@ public class Goods {
     //订单id
     @TableField(exist = false)
     private int orderId;
-    //分类id
-    private int categoryId;
+
     //类型 0：闲置 1：求购
     private String type;
     //商品名称
@@ -38,8 +37,6 @@ public class Goods {
     //交易价格
     @TableField(exist = false)
     private double price;
-    //发布/求购地址
-    private String address;
     //图片
     private String image;
     //状态 0：上架 1：下架
@@ -49,6 +46,8 @@ public class Goods {
     //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createTime;
+    //是否收藏
+    private Integer isCollected;
     //收藏id
     @TableField(exist = false)
     private int collectId;

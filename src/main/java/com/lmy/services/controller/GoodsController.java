@@ -76,10 +76,10 @@ public class GoodsController {
     }
 
     @RequestMapping("/getGoodsByGoodsId")
-    public Result<Goods> getGoodsByGoodsId(Integer goodsId){
+    public Result<Goods> getGoodsByGoodsId(Integer userId, Integer goodsId){
         Result<Goods> json;
         try {
-            Goods res = goodsService.getGoodsByGoodsId(goodsId);
+            Goods res = goodsService.getGoodsByGoodsId(userId,goodsId);
             json = new Result<>(res,"1","获取到商品信息");
         }catch (Exception e){
             logger.warn(e.toString());
@@ -126,7 +126,17 @@ public class GoodsController {
                 : new Result<>(null, "0", "未找到数据",pageInfo.getPages());
         return json;
     }
-
+    @RequestMapping("/getMyGoods")
+    public Result<List<Goods>> getMyGoods(Integer userId,Integer page){
+        PageHelper.startPage(page, 10);
+        List<Goods> res=goodsService.getMyGoods(userId);
+        PageInfo<Goods> pageInfo = new PageInfo<>(res);
+        Result<List<Goods>> json;
+        json = !res.isEmpty()
+                ? new Result<>(res, "1", "获取到闲置列表",pageInfo.getPages())
+                : new Result<>(null, "0", "未找到数据",pageInfo.getPages());
+        return json;
+    }
 
     //我发布的闲置
     @RequestMapping("/getMyResaleList")

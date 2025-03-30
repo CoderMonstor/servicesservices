@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface GoodsService {
 
-    Goods getGoodsByGoodsId(Integer goodsId);
+    Goods getGoodsByGoodsId( Integer userId, Integer goodsId);
 
     Integer addResale(Goods goods);
 
@@ -39,4 +39,6 @@ public interface GoodsService {
     Integer updateSaleOrNot(Integer goodsId);
 
     List<Goods> searchGoods(Integer askId, String key);
+
+    List<Goods> getMyGoods(Integer userId);
 }
