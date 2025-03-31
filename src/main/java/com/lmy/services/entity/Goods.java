@@ -8,12 +8,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
 @TableName("goods")
-public class Goods {
+public class Goods implements Serializable {
      //商品id
     @TableId(type = IdType.AUTO)
     private int goodsId;
