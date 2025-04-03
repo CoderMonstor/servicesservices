@@ -1,7 +1,7 @@
 package com.lmy.services.service.impl;
 
 import com.lmy.services.entity.Discuss;
-import com.lmy.services.mapper.ActivitiesCommentMapper;
+import com.lmy.services.mapper.DiscussMapper;
 import com.lmy.services.service.ActivitiesCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,39 +10,39 @@ import java.util.List;
 
 @Service
 public class ActivitiesCommentServiceImpl implements ActivitiesCommentService {
-    private final ActivitiesCommentMapper activitiesCommentMapper;
+    private final DiscussMapper discussMapper;
 
     @Autowired
-    public ActivitiesCommentServiceImpl(ActivitiesCommentMapper activitiesCommentMapper) {
-        this.activitiesCommentMapper = activitiesCommentMapper;
+    public ActivitiesCommentServiceImpl(DiscussMapper discussMapper) {
+        this.discussMapper = discussMapper;
     }
     @Override
     public List<Discuss> getCommentsByActivityId(int activityId) {
-        return activitiesCommentMapper.getCommentsByActivityId(activityId);
+        return discussMapper.getCommentsByActivityId(activityId);
     }
 
     @Override
     public Integer addComment(Discuss discuss) {
-        return activitiesCommentMapper.addComment(discuss);
+        return discussMapper.addComment(discuss);
     }
 
     @Override
     public Integer deleteComment(int discussId) {
-        return activitiesCommentMapper.deleteComment(discussId);
+        return discussMapper.deleteComment(discussId);
     }
 
     @Override
     public Integer replyComment(Discuss discuss) {
-        return activitiesCommentMapper.replyComment(discuss);
+        return discussMapper.replyComment(discuss);
     }
 
     @Override
     public List<Discuss> getMainComments(int activityId) {
-        return activitiesCommentMapper.getMainComments(activityId);
+        return discussMapper.getMainComments(activityId);
     }
 
     @Override
     public List<Discuss> getChildComments(int parentId) {
-        return activitiesCommentMapper.getChildComments(parentId);
+        return discussMapper.getChildComments(parentId);
     }
 }

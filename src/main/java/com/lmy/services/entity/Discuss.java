@@ -19,7 +19,10 @@ public class Discuss implements Serializable {
     private String content;
     private Timestamp createTime;
     private Timestamp updateTime;
-    private String nickname;
+    private String username;
     private String avatarUrl;
+    private String replyContent;
+    private int depth;
+    private String replyTo;
 }
 

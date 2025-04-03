@@ -12,6 +12,8 @@ public class Activities implements Serializable {
 
     // 活动ID
     private Integer activityId;
+    //活动状态
+    private String status;
     // 主办用户ID
     private Integer hostUserId;
     // 活动名称
@@ -30,16 +32,12 @@ public class Activities implements Serializable {
     private String content;
     // 活动详情（富文本）
     private String details;
-/*
-    //收藏量
-    private Integer collectCount;
-    // 点赞数
-    private Integer praiseCount;
- */
     // 创建时间
     private Timestamp createTime;
     // 更新时间
     private Timestamp updateTime;
+    // 是否已报名
+    private Integer isRegistered;
 
 }
 

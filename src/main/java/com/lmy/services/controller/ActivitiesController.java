@@ -18,7 +18,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/activities")
+@RequestMapping("/activity")
 public class ActivitiesController {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final ActivitiesService activitiesService;
@@ -63,10 +63,22 @@ public class ActivitiesController {
     }
 
     @RequestMapping("/getActivitiesById")
-    public Result<Activities> getActivitiesById(Integer askId,Integer activityId){
+    public Result<Activities> getActivitiesById(Integer userId,Integer activityId){
         Result<Activities> json;
         try {
-            Activities res = activitiesService.getActivitiesById(askId,activityId);
+            Activities res = activitiesService.getActivitiesById(userId,activityId);
+            json=new Result<>(res,"1","获取活动成功");
+        }catch (Exception e){
+            logger.warn(e.toString());
+            json = new Result<>(null,"获取活动失败");
+        }
+        return json;
+    }
+    @RequestMapping("/getActivityDetail")
+    public Result<Activities> getActivityDetail(Integer userId,Integer activityId){
+        Result<Activities> json;
+        try {
+            Activities res = activitiesService.getActivityDetail(userId,activityId);
             json=new Result<>(res,"1","获取活动成功");
         }catch (Exception e){
             logger.warn(e.toString());

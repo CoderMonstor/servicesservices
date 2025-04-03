@@ -17,7 +17,34 @@ public interface ActivitiesMapper {
     Integer deleteActivities(Integer activityId);
 
     @Select("SELECT * FROM activities WHERE activityId = #{activityId}")
-    Activities getActivitiesById(@Param("askId") Integer askId, @Param("activityId") Integer activityId);
+    @Results(id = "activitiesMap", value = {
+            @Result(id = true, property = "activityId", column = "activityId"),
+            @Result(property = "isRegistered",column = "{userId=userId,activityId=activityId}",
+                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getRegistrationStatus")
+            )
+    })
+    Activities getActivitiesById(@Param("askId") Integer userId, @Param("activityId") Integer activityId);
+
+    @Select("""
+        SELECT 
+            a.*, 
+            #{userId} AS queryUserId 
+        FROM activities a 
+        WHERE a.activityId = #{activityId}
+    """)
+    @Results(id = "activityMap", value = {
+            @Result(id = true, column = "activityId", property = "activityId"),
+            @Result(column = "hostUserId", property = "hostUserId"),
+            @Result(
+                    property = "isRegistered",
+                    column = "{userId=queryUserId, activityId=activityId}",
+                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getRegistrationStatus")
+            )
+    })
+    Activities getActivityDetail(
+            @Param("userId") Integer userId,
+            @Param("activityId") Integer activityId
+    );
 
     @Select("SELECT * FROM activities WHERE hostUserId = #{userId}")
     List<Activities> getActivitiesByUser(Integer userId);
@@ -64,11 +91,6 @@ public interface ActivitiesMapper {
 
     @Select("SELECT count(*) FROM registration WHERE userId = #{userId} AND activityId = #{activityId}")
     Integer getRegistrationStatus(Integer userId, Integer activityId);
-
-    @Insert("INSERT INTO praise (userId, activityId, createTime, status) VALUES (#{userId}, #{activityId}, NOW(), 1) " +
-            "ON DUPLICATE KEY UPDATE status = IF(status = 1, 0, 1), updateTime = NOW()")
-    Integer togglePraise(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
-
 
     @Select("""
             SELECT

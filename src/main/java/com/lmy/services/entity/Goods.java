@@ -49,9 +49,6 @@ public class Goods implements Serializable {
     private Date createTime;
     //是否收藏
     private Integer isCollected;
-    //收藏id
-    @TableField(exist = false)
-    private int collectId;
     //交易时间
     @TableField(exist = false)
     @JsonFormat(pattern = "yyyy-MM-dd")

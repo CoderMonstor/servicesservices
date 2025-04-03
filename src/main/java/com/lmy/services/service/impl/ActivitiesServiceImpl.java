@@ -30,8 +30,8 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     }
 
     @Override
-    public Activities getActivitiesById(Integer askId, Integer activityId) {
-        return activitiesMapper.getActivitiesById(askId, activityId);
+    public Activities getActivitiesById(Integer userId, Integer activityId) {
+        return activitiesMapper.getActivitiesById(userId, activityId);
     }
 
     @Override
@@ -109,5 +109,10 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     @Override
     public Integer canselPraiseActivity(Integer userId, Integer activityId) {
         return activitiesMapper.canselPraiseActivity(userId, activityId);
+    }
+
+    @Override
+    public Activities getActivityDetail(Integer userId, Integer activityId) {
+        return activitiesMapper.getActivityDetail(userId, activityId);
     }
 }

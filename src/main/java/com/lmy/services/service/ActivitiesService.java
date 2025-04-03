@@ -16,7 +16,7 @@ public interface ActivitiesService  {
 
     Integer deleteActivities(Integer activityId);
 
-    Activities getActivitiesById(Integer askId, Integer activityId);
+    Activities getActivitiesById(Integer userId, Integer activityId);
 
     List<Activities> getActivitiesByUser(Integer userId);
 
@@ -47,4 +47,7 @@ public interface ActivitiesService  {
     Integer priseActivity(Integer userId, Integer activityId);
 
     Integer canselPraiseActivity(Integer userId, Integer activityId);
+
+    Activities getActivityDetail(Integer userId, Integer activityId);
+
 }

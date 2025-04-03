@@ -36,10 +36,9 @@ public interface GoodsMapper {
     })
     List<Goods> getResaleList(Integer userId);
 
-
     @Select("SELECT * ,#{userId} as askId FROM goods WHERE goodsId = #{goodsId}")
-    Goods getGoodsByGoodsId(Integer userId, Integer goodsId);
-
+    @ResultMap("goodsMap")
+    Goods getGoodsByGoodsId(@Param("userId") Integer userId, @Param("goodsId") Integer goodsId);
 
     @Select("SELECT *, #{userId} AS askId FROM goods WHERE type = '1' ORDER BY goodsId DESC")
     @ResultMap("goodsMap")
@@ -55,6 +54,7 @@ public interface GoodsMapper {
     List<Goods> getMyBuyList(Integer userId);
 
     @Select("SELECT *, #{userId} AS askId FROM goods WHERE userId = #{userId} ORDER BY goodsId DESC")
+    @ResultMap("goodsMap")
     List<Goods> getMyGoods(Integer userId);
 
     @Update("""
@@ -79,6 +79,7 @@ public interface GoodsMapper {
         JOIN collectgoods c ON g.goodsId = c.goodsId
         WHERE c.userId = #{userId}
     """)
+    @ResultMap("goodsMap")
     List<Goods> getCollectedGoodsByUserId(int userId);
 
     // 收藏商品
