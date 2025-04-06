@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -24,5 +26,7 @@ public class Discuss implements Serializable {
     private String replyContent;
     private int depth;
     private String replyTo;
+
+    private List<Discuss> children = new ArrayList<>();
 }
 

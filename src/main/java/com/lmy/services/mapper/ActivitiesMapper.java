@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface ActivitiesMapper {
     @Insert("INSERT INTO activities (hostUserId, activityName, activityImage, activityTime, location, maxParticipants,  details) " +
-            "VALUES (#{hostUserId}, #{activityName}, #{activityImage}, #{activityTime}, #{location}, #{maxParticipants}, #{details}, )")
+            "VALUES (#{hostUserId}, #{activityName}, #{activityImage}, #{activityTime}, #{location}, #{maxParticipants}, #{details} )")
     Integer addActivities(Activities activities);
 
     @Delete("DELETE FROM activities WHERE activityId = #{activityId}")
@@ -19,11 +19,15 @@ public interface ActivitiesMapper {
     @Select("SELECT * FROM activities WHERE activityId = #{activityId}")
     @Results(id = "activitiesMap", value = {
             @Result(id = true, property = "activityId", column = "activityId"),
+            @Result(property = "currentParticipants", column = "{activityId=activityId}",
+                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getCurrentParticipants")
+            ),
             @Result(property = "isRegistered",column = "{userId=userId,activityId=activityId}",
                     one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getRegistrationStatus")
             )
     })
-    Activities getActivitiesById(@Param("askId") Integer userId, @Param("activityId") Integer activityId);
+    Activities getActivitiesById(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
+
 
     @Select("""
         SELECT 
@@ -34,7 +38,9 @@ public interface ActivitiesMapper {
     """)
     @Results(id = "activityMap", value = {
             @Result(id = true, column = "activityId", property = "activityId"),
-            @Result(column = "hostUserId", property = "hostUserId"),
+            @Result(property = "currentParticipants", column = "activityId",
+                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getCurrentParticipants")
+            ),
             @Result(
                     property = "isRegistered",
                     column = "{userId=queryUserId, activityId=activityId}",
@@ -47,6 +53,7 @@ public interface ActivitiesMapper {
     );
 
     @Select("SELECT * FROM activities WHERE hostUserId = #{userId}")
+    @ResultMap("activityMap")
     List<Activities> getActivitiesByUser(Integer userId);
 
     @Insert("INSERT INTO collectActivity (userId, activityId) VALUES (#{userId}, #{activityId})")
@@ -56,6 +63,7 @@ public interface ActivitiesMapper {
     Integer canselCollectActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 
     @Select("SELECT * FROM activities WHERE status = 1")
+    @ResultMap("activityMap")
     List<Activities> getAllActivities(@Param("askId") Integer askId);
 
     @Select("""
@@ -67,6 +75,7 @@ public interface ActivitiesMapper {
         MATCH(activityName, location, details) 
         AGAINST(#{key} IN NATURAL LANGUAGE MODE)
     """)
+    @ResultMap("activityMap")
     List<Activities> searchActivities(@Param("askId") Integer askId, @Param("key") String key);
 
     @Update("UPDATE activities SET activityName=#{activityName}, activityImage=#{activityImage}, activityTime=#{activityTime}, location=#{location}, " +
@@ -78,12 +87,12 @@ public interface ActivitiesMapper {
     Integer changeStatus(@Param("activityId") Integer activityId, @Param("status") Integer status);
 
     @Select("SELECT COUNT(*) FROM praise WHERE activityId = #{activityId}")
-    Object getPraiseCount(Integer activityId);
+    Integer getPraiseCount(Integer activityId);
 
     @Select("SELECT COUNT(*) FROM collectActivity WHERE activityId = #{activityId}")
     Object getCollectCount(Integer activityId);
 
-    @Insert("INSERT INTO registration (userId, activityId, status) VALUES (#{userId}, #{activityId},1)")
+    @Insert("INSERT INTO registration (userId, activityId) VALUES (#{userId}, #{activityId})")
     Integer registerActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 
     @Delete("DELETE FROM registration WHERE userId = #{userId} AND activityId = #{activityId}")
@@ -92,6 +101,8 @@ public interface ActivitiesMapper {
     @Select("SELECT count(*) FROM registration WHERE userId = #{userId} AND activityId = #{activityId}")
     Integer getRegistrationStatus(Integer userId, Integer activityId);
 
+    @Select("SELECT count(*) FROM registration where activityId= #{activityId}")
+    Integer getCurrentParticipants(@Param("activityId") Integer activityId);
     @Select("""
             SELECT
             u.userId, 
@@ -109,7 +120,6 @@ public interface ActivitiesMapper {
             @Result(property = "avatarUrl", column = "avatarUrl"),
     })
     List<User> getActivityParticipants(@Param("activityId") Integer activityId);
-
 
     @Insert("INSERT INTO praise (userId, activityId) VALUES (#{userId}, #{activityId})")
     Integer priseActivity(Integer userId, Integer activityId);

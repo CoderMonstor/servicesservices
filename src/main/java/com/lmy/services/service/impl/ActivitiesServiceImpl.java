@@ -70,7 +70,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     }
 
     @Override
-    public Object getPraiseCount(Integer activityId) {
+    public Integer getPraiseCount(Integer activityId) {
         return activitiesMapper.getPraiseCount(activityId);
     }
 
@@ -83,8 +83,6 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     public Integer registerActivity(Integer userId, Integer activityId) {
         return activitiesMapper.registerActivity(userId, activityId);
     }
-
-
 
     @Override
     public Integer cancelRegistration(Integer userId, Integer activityId) {
