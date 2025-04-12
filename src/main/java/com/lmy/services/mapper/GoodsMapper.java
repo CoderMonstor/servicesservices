@@ -2,9 +2,10 @@ package com.lmy.services.mapper;
 
 import com.lmy.services.entity.Goods;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface GoodsMapper {
 
     @Insert("insert into goods (userId,type,goodsName,goodsDesc,goodsPrice,image,createTime) " +
@@ -22,8 +23,6 @@ public interface GoodsMapper {
 
     @Delete("DELETE FROM goods WHERE goodsId = #{goodsId}")
     Integer deleteGoods(Integer goodsId);
-
-
 
     @Select("SELECT *, #{userId} AS askId FROM goods WHERE type = '0' AND status = '0' ORDER BY goodsId DESC")
     @Results(id = "goodsMap", value = {
@@ -43,7 +42,6 @@ public interface GoodsMapper {
     @Select("SELECT *, #{userId} AS askId FROM goods WHERE type = '1' ORDER BY goodsId DESC")
     @ResultMap("goodsMap")
     List<Goods> getBuyList(Integer userId);
-
 
     @Select("SELECT *, #{userId} AS askId FROM goods WHERE userId = #{userId} AND type = '0' ORDER BY goodsId DESC")
     @ResultMap("goodsMap")
@@ -72,13 +70,25 @@ public interface GoodsMapper {
     @Update("UPDATE goods SET status = CASE WHEN status = '0' THEN '1' ELSE '0' END WHERE goodsId = #{goodsId}")
     Integer updateSaleOrNot(Integer goodsId);
 
-
     @Select("""
-        SELECT *,#{userId} as askId
-        FROM goods g
-        JOIN collectgoods c ON g.goodsId = c.goodsId
-        WHERE c.userId = #{userId}
-    """)
+    SELECT 
+        g.goodsId,
+        g.userId AS userId,
+        g.type,
+        g.goodsName,
+        g.goodsDesc,
+        g.goodsPrice,
+        g.image,
+        g.status,
+        g.sellStatus,
+        g.createTime,
+        c.userId AS c_userId,
+        c.goodsId AS c_goodsId,
+        #{userId} AS askId 
+    FROM goods g
+    JOIN collectgoods c ON g.goodsId = c.goodsId
+    WHERE c.userId = #{userId}
+""")
     @ResultMap("goodsMap")
     List<Goods> getCollectedGoodsByUserId(int userId);
 
@@ -109,9 +119,7 @@ public interface GoodsMapper {
     @ResultMap("goodsMap")
     List<Goods> searchGoods(@Param("askId") Integer askId, @Param("key") String key);
 
-
     // 添加订单
     @Insert("INSERT INTO goodsorder (goodsId, buyer) VALUES (#{goodsId}, #{buyer} )")
     Integer addOrder(@Param("goodsId") Integer goodsId, @Param("buyer") Integer buyer);
-
 }

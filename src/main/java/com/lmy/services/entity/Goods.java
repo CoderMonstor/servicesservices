@@ -13,17 +13,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-@TableName("goods")
+//@TableName("goods")
 public class Goods implements Serializable {
      //商品id
     @TableId(type = IdType.AUTO)
     private int goodsId;
     //发布人id
     private int userId;
-    //订单id
-    @TableField(exist = false)
-    private int orderId;
-
     //类型 0：闲置 1：求购
     private String type;
     //商品名称
@@ -33,10 +29,8 @@ public class Goods implements Serializable {
     //价格
     private double goodsPrice;
     //姓名
-    @TableField(exist = false)
     private String username;
     //交易价格
-    @TableField(exist = false)
     private double price;
     //图片
     private String image;
@@ -49,9 +43,5 @@ public class Goods implements Serializable {
     private Date createTime;
     //是否收藏
     private Integer isCollected;
-    //交易时间
-    @TableField(exist = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date sellTime;
 
 }

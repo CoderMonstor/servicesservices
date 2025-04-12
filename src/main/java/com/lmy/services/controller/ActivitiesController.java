@@ -111,11 +111,11 @@ public class ActivitiesController {
         return json;
     }
 
-    @RequestMapping("/canselCollectActivity")
-    public Result<Integer> canselCollectActivity(Integer userId,Integer activityId){
+    @RequestMapping("/cancelCollectActivity")
+    public Result<Integer> cancelCollectActivity(Integer userId,Integer activityId){
         Result<Integer> json;
         try {
-            Integer res = activitiesService.canselCollectActivity(userId,activityId);
+            Integer res = activitiesService.cancelCollectActivity(userId,activityId);
             json=new Result<>("1","取消收藏活动成功");
         }catch (Exception e){
             logger.warn(e.toString());
@@ -124,9 +124,9 @@ public class ActivitiesController {
         return json;
     }
     @RequestMapping("/getAllActivities")
-    public Result<List<Activities>> getAllActivities(Integer askId,Integer page){
+    public Result<List<Activities>> getAllActivities(Integer userId,Integer page){
         PageHelper.startPage(page,10);
-        List<Activities> res = activitiesService.getAllActivities(askId);
+        List<Activities> res = activitiesService.getAllActivities(userId);
         PageInfo<Activities> pageInfo = new PageInfo<Activities>(res);
         Result<List<Activities>> json;
         json=!res.isEmpty()
@@ -268,7 +268,7 @@ public class ActivitiesController {
     public Result<Integer> cancelPraiseActivity(Integer userId, Integer activityId) {
         Result<Integer> json;
         try {
-            Integer res = activitiesService.canselPraiseActivity(userId, activityId);
+            Integer res = activitiesService.cancelPraiseActivity(userId, activityId);
             json = new Result<>("1", "取消点赞成功");
         } catch (Exception e) {
             logger.warn(e.toString());

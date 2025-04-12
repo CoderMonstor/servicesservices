@@ -22,9 +22,9 @@ public interface ActivitiesService  {
 
     Integer collectActivity(Integer userId, Integer activityId);
 
-    Integer canselCollectActivity(Integer userId, Integer activityId);
+    Integer cancelCollectActivity(Integer userId, Integer activityId);
 
-    List<Activities> getAllActivities(Integer askId);
+    List<Activities> getAllActivities(Integer userId);
 
     List<Activities> searchActivities(Integer askId, String key);
 
@@ -46,7 +46,7 @@ public interface ActivitiesService  {
 
     Integer priseActivity(Integer userId, Integer activityId);
 
-    Integer canselPraiseActivity(Integer userId, Integer activityId);
+    Integer cancelPraiseActivity(Integer userId, Integer activityId);
 
     Activities getActivityDetail(Integer userId, Integer activityId);
 

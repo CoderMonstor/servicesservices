@@ -31,7 +31,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
 
     @Override
     public Activities getActivitiesById(Integer userId, Integer activityId) {
-        return activitiesMapper.getActivitiesById(userId, activityId);
+        return activitiesMapper.getActivityDetail(userId, activityId);
     }
 
     @Override
@@ -45,13 +45,13 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     }
 
     @Override
-    public Integer canselCollectActivity(Integer userId, Integer activityId) {
-        return activitiesMapper.canselCollectActivity(userId, activityId);
+    public Integer cancelCollectActivity(Integer userId, Integer activityId) {
+        return activitiesMapper.cancelCollectActivity(userId, activityId);
     }
 
     @Override
-    public List<Activities> getAllActivities(Integer askId) {
-        return activitiesMapper.getAllActivities(askId);
+    public List<Activities> getAllActivities(Integer userId) {
+        return activitiesMapper.getAllActivities(userId);
     }
 
     @Override
@@ -101,12 +101,12 @@ public class ActivitiesServiceImpl implements ActivitiesService {
 
     @Override
     public Integer priseActivity(Integer userId, Integer activityId) {
-        return activitiesMapper.priseActivity(userId, activityId);
+        return activitiesMapper.praiseActivity(userId, activityId);
     }
 
     @Override
-    public Integer canselPraiseActivity(Integer userId, Integer activityId) {
-        return activitiesMapper.canselPraiseActivity(userId, activityId);
+    public Integer cancelPraiseActivity(Integer userId, Integer activityId) {
+        return activitiesMapper.cancelPraiseActivity(userId, activityId);
     }
 
     @Override

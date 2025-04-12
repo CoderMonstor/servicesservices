@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 @Data
 @EntityScan
 public class Activities implements Serializable {
-
     // 活动ID
     private Integer activityId;
     //活动状态
@@ -28,8 +27,8 @@ public class Activities implements Serializable {
     private Integer maxParticipants;
     // 当前报名人数
     private Integer currentParticipants;
-    // 活动简介
-    private String content;
+//    // 活动简介
+//    private String content;
     // 活动详情（富文本）
     private String details;
     // 创建时间
@@ -38,6 +37,5 @@ public class Activities implements Serializable {
     private Timestamp updateTime;
     // 是否已报名
     private Integer isRegistered;
-
 }
 

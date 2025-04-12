@@ -4,10 +4,12 @@ import com.lmy.services.entity.Goods;
 import com.lmy.services.mapper.GoodsMapper;
 import com.lmy.services.service.GoodsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service("goodsService")
+@Transactional
 public class GoodsServiceImpl implements GoodsService {
     private GoodsMapper goodsMapper;
 

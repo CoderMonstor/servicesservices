@@ -9,121 +9,126 @@ import java.util.List;
 
 @Repository
 public interface ActivitiesMapper {
-    @Insert("INSERT INTO activities (hostUserId, activityName, activityImage, activityTime, location, maxParticipants,  details) " +
-            "VALUES (#{hostUserId}, #{activityName}, #{activityImage}, #{activityTime}, #{location}, #{maxParticipants}, #{details} )")
+    String BASE_SELECT = """
+        SELECT 
+            a.*,  
+            (SELECT CAST(COUNT(*) AS SIGNED) FROM registration WHERE activityId = a.activityId) AS currentParticipants,
+            (CASE WHEN EXISTS (
+                SELECT 1 FROM registration r 
+                WHERE r.userId = #{userId} AND r.activityId = a.activityId 
+            ) THEN CAST(1 AS SIGNED) ELSE CAST(0 AS SIGNED) END) AS isRegistered
+        FROM activities a 
+        """;
+    // 添加活动
+    @Insert("""
+        INSERT INTO activities (hostUserId, activityName, activityImage, activityTime, location, maxParticipants, details) 
+        VALUES (#{hostUserId}, #{activityName}, #{activityImage}, #{activityTime}, #{location}, #{maxParticipants}, #{details})
+    """)
     Integer addActivities(Activities activities);
 
+    // 删除活动
     @Delete("DELETE FROM activities WHERE activityId = #{activityId}")
     Integer deleteActivities(Integer activityId);
 
-    @Select("SELECT * FROM activities WHERE activityId = #{activityId}")
-    @Results(id = "activitiesMap", value = {
-            @Result(id = true, property = "activityId", column = "activityId"),
-            @Result(property = "currentParticipants", column = "{activityId=activityId}",
-                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getCurrentParticipants")
-            ),
-            @Result(property = "isRegistered",column = "{userId=userId,activityId=activityId}",
-                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getRegistrationStatus")
-            )
-    })
-    Activities getActivitiesById(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
-
-
-    @Select("""
-        SELECT 
-            a.*, 
-            #{userId} AS queryUserId 
-        FROM activities a 
-        WHERE a.activityId = #{activityId}
-    """)
+    @Select(BASE_SELECT + " ORDER BY a.activityTime DESC")
     @Results(id = "activityMap", value = {
             @Result(id = true, column = "activityId", property = "activityId"),
-            @Result(property = "currentParticipants", column = "activityId",
-                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getCurrentParticipants")
-            ),
-            @Result(
-                    property = "isRegistered",
-                    column = "{userId=queryUserId, activityId=activityId}",
-                    one = @One(select = "com.lmy.services.mapper.ActivitiesMapper.getRegistrationStatus")
-            )
+            @Result(property = "currentParticipants", column = "currentParticipants"),
+            @Result(property = "isRegistered", column = "isRegistered")
     })
-    Activities getActivityDetail(
-            @Param("userId") Integer userId,
-            @Param("activityId") Integer activityId
-    );
+    List<Activities> getActivityInfo(@Param("userId") Integer userId);
 
-    @Select("SELECT * FROM activities WHERE hostUserId = #{userId}")
+    @Select(BASE_SELECT + " WHERE a.activityId = #{activityId}")
     @ResultMap("activityMap")
-    List<Activities> getActivitiesByUser(Integer userId);
+    Activities getActivityDetail(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 
-    @Insert("INSERT INTO collectActivity (userId, activityId) VALUES (#{userId}, #{activityId})")
-    Integer collectActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
-
-    @Delete("DELETE FROM collectActivity WHERE userId = #{userId} AND activityId = #{activityId}")
-    Integer canselCollectActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
-
-    @Select("SELECT * FROM activities WHERE status = 1")
+    @Select(BASE_SELECT + " WHERE a.hostUserId = #{userId} ORDER BY a.activityTime DESC")
     @ResultMap("activityMap")
-    List<Activities> getAllActivities(@Param("askId") Integer askId);
+    List<Activities> getActivitiesByUser(@Param("userId") Integer userId);
 
+    @Select(BASE_SELECT + " WHERE a.status = 1 ORDER BY a.activityTime DESC")
+    @ResultMap("activityMap")
+    List<Activities> getAllActivities(@Param("userId") Integer userId);
+
+    // 搜索活动
     @Select("""
-    SELECT 
-        activityId, activityName, activityImage, 
-        activityTime, location, status 
-    FROM activities 
-    WHERE 
-        MATCH(activityName, location, details) 
-        AGAINST(#{key} IN NATURAL LANGUAGE MODE)
+        SELECT activityId, activityName, activityImage, activityTime, location, status 
+        FROM activities
+        WHERE MATCH(activityName, location, details) AGAINST(#{key} IN NATURAL LANGUAGE MODE)
+        ORDER BY activityTime DESC
     """)
-    @ResultMap("activityMap")
-    List<Activities> searchActivities(@Param("askId") Integer askId, @Param("key") String key);
+    List<Activities> searchActivities(@Param("userId") Integer userId, @Param("key") String key);
 
-    @Update("UPDATE activities SET activityName=#{activityName}, activityImage=#{activityImage}, activityTime=#{activityTime}, location=#{location}, " +
-            "maxParticipants=#{maxParticipants}, content=#{content}, details=#{details}, hits=#{hits}, praiseCount=#{praiseCount}, status=#{status} " +
-            "WHERE activityId=#{activityId}")
+    // 更新活动
+    @Update("""
+        UPDATE activities 
+        SET activityName = #{activityName}, 
+            activityImage = #{activityImage}, 
+            activityTime = #{activityTime}, 
+            location = #{location}, 
+            maxParticipants = #{maxParticipants}, 
+            details = #{details}, 
+            status = #{status} 
+        WHERE activityId = #{activityId}
+    """)
     Integer updateActivities(Activities activities);
 
+    // 修改活动状态
     @Update("UPDATE activities SET status = #{status} WHERE activityId = #{activityId}")
     Integer changeStatus(@Param("activityId") Integer activityId, @Param("status") Integer status);
 
+    // 收藏活动
+    @Insert("INSERT INTO collectActivity (userId, activityId) VALUES (#{userId}, #{activityId})")
+    Integer collectActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
+
+    // 取消收藏
+    @Delete("DELETE FROM collectActivity WHERE userId = #{userId} AND activityId = #{activityId}")
+    Integer cancelCollectActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
+
+    // 获取点赞数
     @Select("SELECT COUNT(*) FROM praise WHERE activityId = #{activityId}")
     Integer getPraiseCount(Integer activityId);
 
+    // 获取收藏数
     @Select("SELECT COUNT(*) FROM collectActivity WHERE activityId = #{activityId}")
-    Object getCollectCount(Integer activityId);
+    Integer getCollectCount(Integer activityId);
 
+    // 报名活动
     @Insert("INSERT INTO registration (userId, activityId) VALUES (#{userId}, #{activityId})")
     Integer registerActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 
+    // 取消报名
     @Delete("DELETE FROM registration WHERE userId = #{userId} AND activityId = #{activityId}")
-    Integer cancelRegistration(Integer userId, Integer activityId);
+    Integer cancelRegistration(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 
+    // 查询是否报名
     @Select("SELECT count(*) FROM registration WHERE userId = #{userId} AND activityId = #{activityId}")
-    Integer getRegistrationStatus(Integer userId, Integer activityId);
+    Integer getRegistrationStatus(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 
-    @Select("SELECT count(*) FROM registration where activityId= #{activityId}")
+    // 当前报名人数
+    @Select("SELECT count(*) FROM registration WHERE activityId = #{activityId}")
     Integer getCurrentParticipants(@Param("activityId") Integer activityId);
+
+    // 获取参与用户列表
     @Select("""
-            SELECT
-            u.userId, 
-            u.username, 
-            u.avatarUrl
-            FROM user u  
-            INNER JOIN registration r ON u.userid = r.userId  
-            WHERE r.activityId = #{activityId}
-            AND r.status = 1
-            ORDER BY r.createTime DESC
-        """)
+        SELECT u.userId, u.username, u.avatarUrl
+        FROM user u  
+        INNER JOIN registration r ON u.userId = r.userId  
+        WHERE r.activityId = #{activityId} AND r.status = 1
+        ORDER BY r.createTime DESC
+    """)
     @Results({
             @Result(property = "userId", column = "userId", id = true),
             @Result(property = "username", column = "username"),
-            @Result(property = "avatarUrl", column = "avatarUrl"),
+            @Result(property = "avatarUrl", column = "avatarUrl")
     })
     List<User> getActivityParticipants(@Param("activityId") Integer activityId);
 
+    // 点赞活动
     @Insert("INSERT INTO praise (userId, activityId) VALUES (#{userId}, #{activityId})")
-    Integer priseActivity(Integer userId, Integer activityId);
+    Integer praiseActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 
+    // 取消点赞
     @Delete("DELETE FROM praise WHERE userId = #{userId} AND activityId = #{activityId}")
-    Integer canselPraiseActivity(Integer userId, Integer activityId);
+    Integer cancelPraiseActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
 }
