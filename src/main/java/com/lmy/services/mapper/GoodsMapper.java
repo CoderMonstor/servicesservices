@@ -24,7 +24,7 @@ public interface GoodsMapper {
     @Delete("DELETE FROM goods WHERE goodsId = #{goodsId}")
     Integer deleteGoods(Integer goodsId);
 
-    @Select("SELECT *, #{userId} AS askId FROM goods WHERE type = '0' AND status = '0' ORDER BY goodsId DESC")
+    @Select("SELECT *, #{userId} AS askId FROM goods WHERE type = '0' AND status = '0'AND sellStatus='0' ORDER BY goodsId DESC")
     @Results(id = "goodsMap", value = {
             @Result(id = true, property = "goodsId", column = "goodsId"),
             @Result(property = "userId", column = "userId"),
@@ -53,7 +53,7 @@ public interface GoodsMapper {
 
     @Select("SELECT *, #{userId} AS askId FROM goods WHERE userId = #{userId} ORDER BY goodsId DESC")
     @ResultMap("goodsMap")
-    List<Goods> getMyGoods(Integer userId);
+    List<Goods> getGoodsById(Integer userId);
 
     @Update("""
         UPDATE goods
@@ -101,7 +101,7 @@ public interface GoodsMapper {
     Integer cancelCollectGoods(Integer userId, Integer goodsId);
 
     // 获取我的订单
-    @Select("SELECT o.orderId, o.createTime, g.* FROM goodsorder o JOIN goods g ON o.goodsId = g.goodsId WHERE o.userId = #{userId}")
+    @Select("SELECT o.orderId, o.createTime AS sellTime, g.*, #{userId} AS askId FROM goodsorder o JOIN goods g ON o.goodsId = g.goodsId WHERE o.buyer = #{userId}")
     @ResultMap("goodsMap")
     List<Goods> getMyOrder(@Param("userId") Integer userId);
 
@@ -115,11 +115,23 @@ public interface GoodsMapper {
     Integer isCollected(@Param("askId") Integer askId, @Param("goodsId") Integer goodsId);
 
     // 模糊搜索商品
-    @Select("SELECT *, #{askId} AS askId FROM goods WHERE goodsName LIKE CONCAT('%',#{key},'%') ORDER BY goodsId DESC")
+    @Select("""
+        SELECT *, #{askId} AS askId 
+        FROM goods 
+        WHERE goodsName LIKE CONCAT('%', #{key}, '%') 
+           OR goodsDesc LIKE CONCAT('%', #{key}, '%') 
+        ORDER BY goodsId DESC
+    """)
     @ResultMap("goodsMap")
     List<Goods> searchGoods(@Param("askId") Integer askId, @Param("key") String key);
+
 
     // 添加订单
     @Insert("INSERT INTO goodsorder (goodsId, buyer) VALUES (#{goodsId}, #{buyer} )")
     Integer addOrder(@Param("goodsId") Integer goodsId, @Param("buyer") Integer buyer);
+
+    @Update("UPDATE goods SET sellStatus = '1' WHERE goodsId = #{goodsId}")
+    int updateGoodsStatus(@Param("goodsId") Integer goodsId);
+
+
 }

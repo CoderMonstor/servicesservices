@@ -88,7 +88,9 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public Integer addOrder(Integer goodsId, Integer buyer) {
-        return goodsMapper.addOrder(goodsId, buyer);
+        int result1 = goodsMapper.addOrder(goodsId, buyer);
+        int result2 = goodsMapper.updateGoodsStatus(goodsId);
+        return (result1 > 0 && result2 > 0) ? 1 : 0;
     }
 
     @Override
@@ -102,7 +104,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<Goods> getMyGoods(Integer userId) {
-        return goodsMapper.getMyGoods(userId);
+    public List<Goods> getGoodsById(Integer userId) {
+        return goodsMapper.getGoodsById(userId);
     }
 }

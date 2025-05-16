@@ -34,7 +34,7 @@ public class ChatServiceImpl implements ChatService {
 //    private MessageMapper messageMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatServiceImpl.class);
 
-    
+
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
         String userId = (String)param.get("userId");
@@ -53,10 +53,8 @@ public class ChatServiceImpl implements ChatService {
             String fromUserId = (String) param.get("fromUserId");
             Integer sender = Integer.parseInt(fromUserId);
             Integer receiver = Integer.parseInt((String) param.get("toUserId"));
-
             // 保存实际的发送者ID
             Integer actualSender = sender;
-
             // 确保 sender 小于 receiver，违反数据库约束时会报错
             if (sender > receiver) {
                 // 交换 sender 和 receiver
@@ -119,10 +117,10 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    
+
     @Override
     public void remove(ChannelHandlerContext ctx) {
-        Iterator<Entry<String, ChannelHandlerContext>> iterator = 
+        Iterator<Entry<String, ChannelHandlerContext>> iterator =
                 Constant.onlineUserMap.entrySet().iterator();
         while(iterator.hasNext()) {
             Entry<String, ChannelHandlerContext> entry = iterator.next();
@@ -163,7 +161,6 @@ public class ChatServiceImpl implements ChatService {
             sendMessage(toUserCtx, responseJson);
         }
     }
-    
     @Override
     public void typeError(ChannelHandlerContext ctx) {
         String responseJson = new ResponseJson()
@@ -171,13 +168,9 @@ public class ChatServiceImpl implements ChatService {
                 .toString();
         sendMessage(ctx, responseJson);
     }
-    
 
-    
     private void sendMessage(ChannelHandlerContext ctx, String message) {
         ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
     }
 
-   
-    
 }

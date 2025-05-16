@@ -61,6 +61,18 @@ public class ActivitiesController {
         }
         return json;
     }
+    @RequestMapping("/cancelActivity")
+    public Result<Integer> cancelActivity(Integer activityId){
+        Result<Integer> json;
+        try {
+            Integer res = activitiesService.cancelActivity(activityId);
+            json = new Result<>("1","取消活动成功");
+        }catch (Exception e){
+            logger.warn(e.toString());
+            json = new Result<>("0","取消活动失败");
+        }
+        return json;
+    }
 
     @RequestMapping("/getActivitiesById")
     public Result<Activities> getActivitiesById(Integer userId,Integer activityId){
@@ -135,7 +147,7 @@ public class ActivitiesController {
         return json;
     }
 
-    @RequestMapping("/searchActivities")
+    @RequestMapping("/searchActivity")
     public Result<List<Activities>> searchActivities(Integer askId,String key,Integer page){
         PageHelper.startPage(page,10);
         List<Activities> res = activitiesService.searchActivities(askId,key);
@@ -156,6 +168,17 @@ public class ActivitiesController {
             logger.warn(e.toString());
             json = new Result<>("0", "更新活动失败");
         }
+        return json;
+    }
+    @RequestMapping("/getMyStarActivities")
+    public Result<List<Activities>> getMyStarActivities(Integer userId,Integer page) {
+        PageHelper.startPage(page, 10);
+        List<Activities> res = activitiesService.getMyStarActivities(userId);
+        PageInfo<Activities> pageInfo = new PageInfo<Activities>(res);
+        Result<List<Activities>> json;
+        json = !res.isEmpty()
+                ? new Result<>(res, "1", "获取到收藏活动列表", pageInfo.getPages())
+                : new Result<>(null, "0", "未找到数据", pageInfo.getPages());
         return json;
     }
     @RequestMapping("/changeStatus")
@@ -213,6 +236,17 @@ public class ActivitiesController {
             logger.warn(e.toString());
             json = new Result<>("0", "取消报名失败");
         }
+        return json;
+    }
+    @RequestMapping("/getActivitiesRegistered")
+    public Result<List<Activities>> getActivitiesRegistered(Integer userId,Integer page) {
+        PageHelper.startPage(page, 10);
+        List<Activities> res = activitiesService.getActivitiesRegistered(userId);
+        PageInfo<Activities> pageInfo = new PageInfo<Activities>(res);
+        Result<List<Activities>> json;
+        json = !res.isEmpty()
+                ? new Result<>(res, "1", "获取到活动列表", pageInfo.getPages())
+                : new Result<>(null, "0", "未找到数据", pageInfo.getPages());
         return json;
     }
 

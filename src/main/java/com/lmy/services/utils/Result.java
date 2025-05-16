@@ -5,6 +5,7 @@ public class Result<T> {
     private T data;
     private String code;
     private String msg;
+    private Long total;
     private Integer totalPage;
 
     public static <T> Result<T> error(String msg) {
@@ -24,6 +25,13 @@ public class Result<T> {
         this.data = data;
         this.code = code;
         this.msg = msg;
+    }
+    public Result(T data, String code, String msg, Long total, Integer totalPage) {
+        this.data = data;
+        this.code = code;
+        this.msg = msg;
+        this.total = total;
+        this.totalPage = totalPage;
     }
 
     public Result(T data, String code, String msg, Integer totalPage) {
@@ -72,5 +80,13 @@ public class Result<T> {
                 ", code='" + code + '\'' +
                 ", msg='" + msg + '\'' +
                 '}';
+    }
+
+    public Long getTotal() {
+        return total;
+    }
+
+    public void setTotal(Long total) {
+        this.total = total;
     }
 }

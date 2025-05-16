@@ -50,4 +50,9 @@ public interface ActivitiesService  {
 
     Activities getActivityDetail(Integer userId, Integer activityId);
 
+    List<Activities> getMyStarActivities(Integer userId);
+
+    List<Activities> getActivitiesRegistered(Integer userId);
+
+    Integer cancelActivity(Integer activityId);
 }

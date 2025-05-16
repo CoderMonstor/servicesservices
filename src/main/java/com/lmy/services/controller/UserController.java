@@ -8,6 +8,7 @@ import com.lmy.services.entity.User;
 import com.lmy.services.service.MailService;
 import com.lmy.services.service.UserService;
 import com.lmy.services.utils.Constant;
+import com.lmy.services.utils.MD5Util;
 import com.lmy.services.utils.Result;
 import com.lmy.services.utils.RandomCodeUtil;
 import jakarta.servlet.http.HttpSession;
@@ -60,75 +61,199 @@ public class UserController {
         return json;
     }
     //登录
+//    @RequestMapping("/logIn")
+//    public Result<User> logIn(User user, HttpSession session) {
+//        User res = userService.logIn(user);
+//        if(res!=null){
+//            session.setAttribute(Constant.USER_TOKEN, res.getUserId());
+//        }
+//        Result<User> json;
+//        json = res != null
+//                ? new Result<>(res, "1", "验证成功")
+//                : new Result<>(null, "0", "验证失败");
+//        return json;
+//    }
     @RequestMapping("/logIn")
     public Result<User> logIn(User user, HttpSession session) {
+        // 1. 对密码进行MD5加密
+        if (user.getPassword() != null) {
+            String encryptedPwd = MD5Util.encrypt(user.getPassword());
+            System.out.println("加密后的密码：" + encryptedPwd);
+            user.setPassword(encryptedPwd);
+        }
+
+        // 2. 执行登录验证
         User res = userService.logIn(user);
-        if(res!=null){
+
+        // 3. 登录成功处理
+        if (res != null) {
             session.setAttribute(Constant.USER_TOKEN, res.getUserId());
+            session.setMaxInactiveInterval(1800); // 可选：设置session过期时间（30分钟）
         }
-        Result<User> json;
-        json = res != null
-                ? new Result<>(res, "1", "验证成功")
-                : new Result<>(null, "0", "验证失败");
-        return json;
-    }
 
+        // 4. 构建返回结果
+        return new Result<>(
+                res,
+                res != null ? "1" : "0",
+                res != null ? "验证成功" : "验证失败"
+        );
+    }
     //添加成功返回1，捕获到异常既用户已存在返回0,验证码不符返回-1
+//    @RequestMapping("/addUser")
+//    public Result<User> addUser(String email, String password, String code, HttpSession session) {
+//        Result<User> json;
+//        //获得session里存的验证码用来比对
+//        String sessionCode;
+//        //若session中没有code返回-2
+//        try {
+//            sessionCode = session.getAttribute("code").toString();
+//        } catch (Exception e) {
+//            logger.error("session中没有code" + e.toString());
+//            json =  new Result<>(null, "-2", "验证码不符或已经超时了");
+//            return json;
+//        }
+//
+//        User user = new User(email, password);
+//        if (code.equals(sessionCode)) {
+//            if(userService.isExistTheEmail(email) == 0){
+//                session.setAttribute("code", "null");
+//                userService.insertUser(user);
+//                logger.info(user.toString());
+//                json =  new Result<>(user, "1", "注册成功请前往登录");
+//            } else{
+//                json =  new Result<>(null, "0", "邮箱已经注册过了");
+//            }
+//        } else {
+//            json =  new Result<>(null, "-1", "验证码不符");
+//        }
+//        return json;
+//    }
+
     @RequestMapping("/addUser")
-    public Result<User> addUser(String email, String password, String code, HttpSession session) {
+    public Result<User> addUser(
+            String email,
+            String password,
+            String code,
+            HttpSession session) {
+
+        // 初始化返回对象
         Result<User> json;
-        //获得session里存的验证码用来比对
+
+        // 1. 验证码校验逻辑
         String sessionCode;
-        //若session中没有code返回-2
         try {
-            sessionCode = session.getAttribute("code").toString();
-        } catch (Exception e) {
-            logger.error("session中没有code" + e.toString());
-            json =  new Result<>(null, "-2", "验证码不符或已经超时了");
-            return json;
-        }
-
-        User user = new User(email, password);
-        if (code.equals(sessionCode)) {
-            if(userService.isExistTheEmail(email) == 0){
-                session.setAttribute("code", "null");
-                userService.insertUser(user);
-                logger.info(user.toString());
-                json =  new Result<>(user, "1", "注册成功请前往登录");
-            } else{
-                json =  new Result<>(null, "0", "邮箱已经注册过了");
+            sessionCode = (String) session.getAttribute("code");
+            if (sessionCode == null) {
+                throw new Exception("Session中验证码不存在");
             }
-        } else {
-            json =  new Result<>(null, "-1", "验证码不符");
+        } catch (Exception e) {
+            logger.error("验证码校验失败: {}", e.getMessage());
+            return new Result<>(null, "-2", "验证码不符或已经超时了");
         }
-        return json;
-    }
 
+        // 2. MD5加密密码
+        String encryptedPwd = MD5Util.encrypt(password);
+//        System.out.println("加密后的密码：" + encryptedPwd);
+        // 3. 创建User对象（仅包含必要字段）
+        User user = new User(email, encryptedPwd);
+//        user.setEmail(email);
+//        user.setPassword(encryptedPwd);
+
+        // 4. 验证码比对
+        if (!code.equals(sessionCode)) {
+            return new Result<>(null, "-1", "验证码不符");
+        }
+
+        // 5. 邮箱存在性检查
+        if (userService.isExistTheEmail(email) > 0) {
+            return new Result<>(null, "0", "邮箱已经注册过了");
+        }
+
+        // 6. 执行注册逻辑
+        try {
+            // 清空Session中的验证码（防止重复使用）
+            session.setAttribute("code", null);
+
+            // 插入用户（使用Service层方法）
+            userService.insertUser(user);
+
+            logger.info("用户注册成功: {}", user.toString());
+            return new Result<>(user, "1", "注册成功请前往登录");
+
+        } catch (Exception e) {
+            logger.error("注册失败: {}", e.getMessage());
+            return new Result<>(null, "-3", "系统错误，请稍后再试");
+        }
+    }
     //更新密码
+//    @RequestMapping("/updatePwd")
+//    public int updatePwd(String email, String password, String code, HttpSession session) {
+//        //获得session里存的验证码用来比对
+//        String sessionCode;
+//        //若session中没有code返回-2
+//        try {
+//            sessionCode = session.getAttribute("code").toString();
+//        } catch (Exception e) {
+//            logger.error("session中没有code" + e.toString());
+//            return -2;
+//        }
+//        if (code.equals(sessionCode)) {
+//            try {
+//                session.setAttribute("code", "null");
+//                return userService.updatePwd(email, password);
+//            } catch (Exception e) {
+//                logger.warn(e.toString());
+//                return 0;
+//            }
+//        } else {
+//            return -1;
+//        }
+//    }
     @RequestMapping("/updatePwd")
     public int updatePwd(String email, String password, String code, HttpSession session) {
-        //获得session里存的验证码用来比对
+
+        // 1. 验证码校验
         String sessionCode;
-        //若session中没有code返回-2
         try {
-            sessionCode = session.getAttribute("code").toString();
+            sessionCode = (String) session.getAttribute("code");
+            if (sessionCode == null) {
+                throw new Exception("验证码不存在");
+            }
         } catch (Exception e) {
-            logger.error("session中没有code" + e.toString());
+            logger.error("验证码校验失败: {}", e.getMessage());
             return -2;
         }
-        if (code.equals(sessionCode)) {
-            try {
-                session.setAttribute("code", "null");
-                return userService.updatePwd(email, password);
-            } catch (Exception e) {
-                logger.warn(e.toString());
-                return 0;
-            }
-        } else {
+
+        // 2. 密码加密（核心修改点）
+        String encryptedPwd = MD5Util.encrypt(password);
+        logger.info("加密后的密码：{}", encryptedPwd);
+        // 3. 验证码比对
+        if (!code.equals(sessionCode)) {
+            logger.warn("验证码不匹配: 输入={}, 实际={}", code, sessionCode);
             return -1;
         }
-    }
 
+        // 4. 执行密码更新
+        try {
+            // 清空Session中的验证码
+            session.setAttribute("code", null);
+
+            // 调用Service层更新密码（已加密）
+            int affectedRows = userService.updatePwd(email, encryptedPwd);
+
+            if (affectedRows > 0) {
+                logger.info("密码更新成功: {}", email);
+                return 1;
+            } else {
+                logger.warn("密码更新失败: 用户不存在");
+                return 0;
+            }
+
+        } catch (Exception e) {
+            logger.error("系统异常: {}", e.getMessage());
+            return 0;
+        }
+    }
     //更新用户信息
     @RequestMapping("/updateUserDetail")
     public int updateUserDetail(User user) {

@@ -1,20 +1,20 @@
-package com.lmy.services.entity;
+package com.lmy.services.entity.Vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
-@EntityScan
-public class Activities implements Serializable {
-    // 活动ID
+@NoArgsConstructor
+@AllArgsConstructor
+public class AdminActivity {
     private Integer activityId;
     //活动状态
     private String status;
     // 主办用户ID
-    private Integer hostUserId;
+    private String username;
     // 活动名称
     private String activityName;
     // 封面图URL
@@ -29,13 +29,4 @@ public class Activities implements Serializable {
     private Integer currentParticipants;
     // 活动详情（富文本）
     private String details;
-    // 创建时间
-    private Timestamp createTime;
-    // 更新时间
-    private Timestamp updateTime;
-    // 是否已报名
-    private Integer isRegistered;
-    //是否点赞
-    private Integer isPraised;
 }
-

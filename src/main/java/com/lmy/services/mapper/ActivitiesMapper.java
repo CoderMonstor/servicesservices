@@ -10,15 +10,20 @@ import java.util.List;
 @Repository
 public interface ActivitiesMapper {
     String BASE_SELECT = """
-        SELECT 
-            a.*,  
-            (SELECT CAST(COUNT(*) AS SIGNED) FROM registration WHERE activityId = a.activityId) AS currentParticipants,
-            (CASE WHEN EXISTS (
-                SELECT 1 FROM registration r 
-                WHERE r.userId = #{userId} AND r.activityId = a.activityId 
-            ) THEN CAST(1 AS SIGNED) ELSE CAST(0 AS SIGNED) END) AS isRegistered
-        FROM activities a 
-        """;
+    SELECT 
+        a.*,  
+        (SELECT CAST(COUNT(*) AS SIGNED) FROM registration WHERE activityId = a.activityId) AS currentParticipants,
+        (CASE WHEN EXISTS (
+            SELECT 1 FROM registration r 
+            WHERE r.userId = #{userId} AND r.activityId = a.activityId 
+        ) THEN CAST(1 AS SIGNED) ELSE CAST(0 AS SIGNED) END) AS isRegistered,
+        (CASE WHEN EXISTS (
+            SELECT 1 FROM praise p
+            WHERE p.userId = #{userId} AND p.activityId = a.activityId
+        ) THEN CAST(1 AS SIGNED) ELSE CAST(0 AS SIGNED) END) AS isPraised
+    FROM activities a 
+    """;
+
     // 添加活动
     @Insert("""
         INSERT INTO activities (hostUserId, activityName, activityImage, activityTime, location, maxParticipants, details) 
@@ -34,7 +39,8 @@ public interface ActivitiesMapper {
     @Results(id = "activityMap", value = {
             @Result(id = true, column = "activityId", property = "activityId"),
             @Result(property = "currentParticipants", column = "currentParticipants"),
-            @Result(property = "isRegistered", column = "isRegistered")
+            @Result(property = "isRegistered", column = "isRegistered"),
+            @Result(property = "isPraised", column = "isPraised")
     })
     List<Activities> getActivityInfo(@Param("userId") Integer userId);
 
@@ -51,12 +57,13 @@ public interface ActivitiesMapper {
     List<Activities> getAllActivities(@Param("userId") Integer userId);
 
     // 搜索活动
-    @Select("""
-        SELECT activityId, activityName, activityImage, activityTime, location, status 
-        FROM activities
-        WHERE MATCH(activityName, location, details) AGAINST(#{key} IN NATURAL LANGUAGE MODE)
-        ORDER BY activityTime DESC
+    @Select(BASE_SELECT + """
+        WHERE a.activityName LIKE CONCAT('%', #{key}, '%')
+           OR a.location LIKE CONCAT('%', #{key}, '%')
+           OR a.details LIKE CONCAT('%', #{key}, '%')
+        ORDER BY a.activityTime DESC
     """)
+    @ResultMap("activityMap")
     List<Activities> searchActivities(@Param("userId") Integer userId, @Param("key") String key);
 
     // 更新活动
@@ -131,4 +138,25 @@ public interface ActivitiesMapper {
     // 取消点赞
     @Delete("DELETE FROM praise WHERE userId = #{userId} AND activityId = #{activityId}")
     Integer cancelPraiseActivity(@Param("userId") Integer userId, @Param("activityId") Integer activityId);
+
+        @Select(BASE_SELECT + """
+        INNER JOIN praise p ON a.activityId = p.activityId
+        WHERE p.userId = #{userId}
+        ORDER BY a.activityTime DESC
+    """)
+    @ResultMap("activityMap")
+    List<Activities> getMyStarActivities(@Param("userId") Integer userId);
+    @Select(BASE_SELECT + """
+        INNER JOIN collectActivity c ON a.activityId = c.activityId
+        WHERE c.userId = #{userId}
+        ORDER BY a.activityTime DESC
+    """)
+    @ResultMap("activityMap")
+    List<Activities> getMyCollectedActivities(@Param("userId") Integer userId);
+
+    @Select(BASE_SELECT + " WHERE EXISTS (SELECT 1 FROM registration r WHERE r.userId = #{userId} AND r.activityId = a.activityId)")
+    List<Activities> getActivitiesRegistered(@Param("userId") Integer userId);
+
+    @Update("UPDATE activities SET status = 0 WHERE activityId = #{activityId}")
+    Integer cancelActivity(Integer activityId);
 }

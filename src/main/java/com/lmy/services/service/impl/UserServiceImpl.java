@@ -6,6 +6,7 @@ import com.lmy.services.entity.User;
 import com.lmy.services.mapper.UserMapper;
 import com.lmy.services.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +15,12 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+//    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper) {
         this.userMapper = userMapper;
+//        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -39,7 +42,6 @@ public class UserServiceImpl implements UserService {
     public User logIn(User user) {
         return userMapper.logIn(user);
     }
-
 
     @Override
     public int updatePwd(String email,String password) {

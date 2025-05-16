@@ -113,4 +113,19 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     public Activities getActivityDetail(Integer userId, Integer activityId) {
         return activitiesMapper.getActivityDetail(userId, activityId);
     }
+
+    @Override
+    public List<Activities> getMyStarActivities(Integer userId) {
+        return activitiesMapper.getMyStarActivities(userId);
+    }
+
+    @Override
+    public List<Activities> getActivitiesRegistered(Integer userId) {
+        return activitiesMapper.getActivitiesRegistered(userId);
+    }
+
+    @Override
+    public Integer cancelActivity(Integer activityId) {
+        return activitiesMapper.cancelActivity(activityId);
+    }
 }

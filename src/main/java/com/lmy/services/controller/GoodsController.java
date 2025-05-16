@@ -126,10 +126,10 @@ public class GoodsController {
                 : new Result<>(null, "0", "未找到数据",pageInfo.getPages());
         return json;
     }
-    @RequestMapping("/getMyGoods")
-    public Result<List<Goods>> getMyGoods(Integer userId,Integer page){
+    @RequestMapping("/getGoodsById")
+    public Result<List<Goods>> getGoodsById(Integer userId,Integer page){
         PageHelper.startPage(page, 10);
-        List<Goods> res=goodsService.getMyGoods(userId);
+        List<Goods> res=goodsService.getGoodsById(userId);
         PageInfo<Goods> pageInfo = new PageInfo<>(res);
         Result<List<Goods>> json;
         json = !res.isEmpty()
@@ -217,7 +217,7 @@ public class GoodsController {
     }
 
     @RequestMapping("/getMyOrder")
-    public Result<List<Goods>> getMyOrder(Integer page,Integer userId){
+    public Result<List<Goods>> getMyOrder(Integer userId,Integer page){
         PageHelper.startPage(page, 10);
         List<Goods> res = goodsService.getMyOrder(userId);
         PageInfo<Goods> pageInfo = new PageInfo<>(res);

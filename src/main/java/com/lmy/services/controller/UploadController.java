@@ -28,11 +28,6 @@ public class UploadController {
 //    public int upLoad(MultipartFile file, HttpServletRequest request){
     public int upLoad(MultipartFile file){
         System.out.println(file.getOriginalFilename());
-//        String path=request.getSession().getServletContext().getRealPath("images/");
-        // upload:
-        //  windows: D:/images
-        //  linux: /tmp/images
-        //如果当前设备是windows，那么使用upload:windows,如果是linux，那么使用upload:linux
 
         String path;
         if (System.getProperty("os.name").toLowerCase().startsWith("win")) {

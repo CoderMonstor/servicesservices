@@ -44,4 +44,15 @@ public class Goods implements Serializable {
     //是否收藏
     private Integer isCollected;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(exist = false)
+    private Date sellTime;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

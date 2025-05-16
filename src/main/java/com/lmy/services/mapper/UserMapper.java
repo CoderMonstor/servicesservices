@@ -21,7 +21,9 @@ public interface UserMapper {
                     one = @One(select = "com.lmy.services.mapper.UserMapper.getFanNumById")),
             @Result(property = "followNum",column = "userId",
                     one = @One(select = "com.lmy.services.mapper.UserMapper.getFollowNumById")),
-            @Result(property = "isFollow",column = "{askId = askId,userId = user.userId}",
+//            @Result(property = "isFollow",column = "{askId = askId,userId = user.userId}",
+//                    one = @One(select = "com.lmy.services.mapper.UserMapper.isAFollow")),
+            @Result(property = "isFollow", column = "{askId = askId, userId = userId}", // 修正列名
                     one = @One(select = "com.lmy.services.mapper.UserMapper.isAFollow")),
     })
     User findUserById(@Param("askId") Integer askId, @Param("userId") Integer userId);
@@ -30,8 +32,11 @@ public interface UserMapper {
     User findUserByName(@Param("askId") Integer askId, String username);
 
     //添加用户
-    @Insert({"insert into user(id,email,password) values(#{id},#{email},#{password})"})
-    @Options(useGeneratedKeys=true,keyColumn="userId",keyProperty = "userId")
+//    @Insert({"insert into user(id,email,password) values(#{id},#{email},#{password})"})
+//    @Options(useGeneratedKeys=true,keyColumn="userId",keyProperty = "userId")
+//    Integer insertUser(User user);
+    @Insert({"insert into user(email,password) values(#{email},#{password})"})
+    @Options(useGeneratedKeys=true, keyColumn="userId", keyProperty = "userId")
     Integer insertUser(User user);
 
     //登录操作，查询出结果就登录成功，查询结果空就失败
@@ -43,13 +48,6 @@ public interface UserMapper {
             "FROM user " +
             "WHERE email = #{email} AND password = #{password}")
     User logIn(User user);
-//    @Select("SELECT user.*,p.postNum,follow.followNum,fan.fanNum FROM " +
-//            "USER LEFT JOIN (SELECT userId ,count(*) AS postNum from post where userId = (select userId from user where email =  #{email})) as p ON USER.userId = p.userId " +
-//            "LEFT JOIN (SELECT fanId, count(*) AS followNum FROM fans WHERE fanId = (select userId from user where email = #{email} ) ) AS follow ON USER.userId = follow.fanId " +
-//            "LEFT JOIN (SELECT followedId, count(*) AS fanNum FROM fans WHERE followedId = (select userId from user where email = #{email} ) ) AS fan ON USER.userId = fan.followedId " +
-//            "WHERE email = #{email} and password = #{password}")
-//    User logIn(User user);
-
     //更新密码操作，更新成功返回1，否则返回0
     @Update("update user set password=#{password} where email=#{email}")
     int updatePwd(String email,String password);
@@ -115,6 +113,5 @@ public interface UserMapper {
 
     @Select("SELECT * FROM updates order by date DESC LIMIT 1 ")
     Updates checkUpdate();
-
 
 }

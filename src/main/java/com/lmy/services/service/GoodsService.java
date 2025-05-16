@@ -40,5 +40,5 @@ public interface GoodsService {
 
     List<Goods> searchGoods(Integer askId, String key);
 
-    List<Goods> getMyGoods(Integer userId);
+    List<Goods> getGoodsById(Integer userId);
 }

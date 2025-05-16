@@ -33,7 +33,6 @@ public class MailServiceImpl implements MailService {
             helper.setFrom(from);
             helper.setTo(to);
             helper.setSubject("Hi CDU验证码");
-            // true代表支持html
             helper.setText("这是来自Hi CDU的验证码邮件：<h3 style='color:skyblue;'>" + code + "</h3><br/>", true);
             mailSender.send(message);
             logger.info("发送HTML邮件成功" + to);

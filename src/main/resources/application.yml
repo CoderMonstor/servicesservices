@@ -60,8 +60,6 @@ spring:
       mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
       mail.smtp.socketFactory.fallback: false
 
-
-
 page helper:
   helperDialect: mysql
   reasonable: true

@@ -39,7 +39,6 @@ public class PostHotUtil {
            int h = (int)((now.getTime()-addDate.getTime())/(1000 * 60 * 60));
             hot= (baseHot / Math.exp(0.064 * h));
         } catch (ParseException e) {
-//            e.printStackTrace();
             logger.error("时间转换错误");
         }
         DecimalFormat df = new DecimalFormat("#.###");

@@ -18,7 +18,6 @@ public class WebSocketChildChannelHandler extends ChannelInitializer<SocketChann
 
     @Resource(name = "httpRequestHandler")
     private ChannelHandler httpRequestHandler;
-
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ch.pipeline().addLast("http-codec", new HttpServerCodec()); // HTTP编码解码器

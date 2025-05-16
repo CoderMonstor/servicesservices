@@ -47,15 +47,15 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
     }
-
-
     //转换json返回时忽略密码这个属性
     @JsonIgnore
     public String getPassword() {
         return password;
     }
 
-
+    public void setPassword(String password) {
+        this.password = password;
+    }
     @Override
     public String toString() {
         return "User{" +
