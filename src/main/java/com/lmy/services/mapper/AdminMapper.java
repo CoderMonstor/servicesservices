@@ -45,8 +45,11 @@ public interface AdminMapper {
                     one = @One(select = "com.lmy.services.mapper.AdminMapper.getActivityNumById")),
     })
     UserDetail getUserById(Integer userId);
-    @Update("UPDATE user SET password = 123456 WHERE userId = #{userId}")
-    boolean resetPassword(Integer userId);
+//    @Update("UPDATE user SET password = 123456 WHERE userId = #{userId}")
+//    boolean resetPassword(Integer userId);
+    @Update("UPDATE user SET password = #{encryptedPassword} WHERE userId = #{userId}")
+    boolean resetPassword(Integer userId, String encryptedPassword);
+
     @Update("UPDATE user SET username=#{username},email=#{email},avatarUrl=#{avatarUrl} WHERE userId = #{userId}")
     Integer updateUser(UserUpdate userUpdate);
     @Select("SELECT * FROM user")

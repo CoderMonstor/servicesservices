@@ -273,7 +273,6 @@ public class UserController {
             return 0;
         }
     }
-
     //查找用户关注的人
     @RequestMapping("/findFollow")
     public Result<List<User>> findFollow(Integer userId, Integer page) {

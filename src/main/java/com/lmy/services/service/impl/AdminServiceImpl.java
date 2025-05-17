@@ -72,10 +72,13 @@ public class AdminServiceImpl implements AdminService {
             return adminMapper.getUserById(userId);
         }
 
-        public boolean resetPassword(Integer userId) {
-            return adminMapper.resetPassword(userId);
+//        public boolean resetPassword(Integer userId) {
+//            return adminMapper.resetPassword(userId);
+//        }
+        @Override
+        public boolean resetPassword(Integer userId, String encryptedPassword) {
+            return adminMapper.resetPassword(userId, encryptedPassword);
         }
-
         public Integer updateUser(UserUpdate userUpdate) {return adminMapper.updateUser(userUpdate);}
 //=======================================================================================================================
     @Override

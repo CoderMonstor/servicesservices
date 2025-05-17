@@ -16,7 +16,8 @@ public interface AdminService {
 
     UserDetail getUserById(Integer userId);
 
-    boolean resetPassword(Integer userId);
+//    boolean resetPassword(Integer userId);
+    boolean resetPassword(Integer userId, String encryptedPassword);
 
     Integer updateUser(UserUpdate userUpdate);
 

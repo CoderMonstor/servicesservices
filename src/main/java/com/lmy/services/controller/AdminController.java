@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.lmy.services.entity.Admin;
 import com.lmy.services.entity.Vo.*;
 import com.lmy.services.service.AdminService;
+import com.lmy.services.utils.MD5Util;
 import com.lmy.services.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,7 @@ public class AdminController {
     public Result<Integer> updateUser(@RequestBody UserUpdate userUpdate) {
         System.out.println("正在修改用户 ");
         try {
+
             Integer res= adminService.updateUser(userUpdate);
             return new Result<>("1","修改成功");
         }catch (Exception e){
@@ -68,8 +70,13 @@ public class AdminController {
     }
     @RequestMapping("/resetPassword")
     public boolean resetPassword(Integer userId) {
+//        System.out.println("正在重置密码 ");
+//        return adminService.resetPassword(userId);
         System.out.println("正在重置密码 ");
-        return adminService.resetPassword(userId);
+        String newPassword = "123456"; // 假设默认密码为 123456
+        String encryptedPassword = MD5Util.encrypt(newPassword); // 使用 MD5 加密
+        return adminService.resetPassword(userId, encryptedPassword);
+
     }
 
     @RequestMapping("/posts")
